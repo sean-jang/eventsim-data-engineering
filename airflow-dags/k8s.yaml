@@ -1,0 +1,35 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-bronze-to-silver
+  namespace: spark-operator
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: "seanjang/bronze-to-silver-spark:v4.2.0"
+  imagePullPolicy: Always
+  mainApplicationFile: local:///opt/spark_samples/spark_operator.py
+  sparkVersion: "3.5.0"
+  restartPolicy:
+    type: Never
+  volumes:
+    - name: "test-volume"
+      hostPath:
+        path: "/tmp"
+        type: Directory
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "512m"
+    serviceAccount: spark
+    volumeMounts:
+      - name: "test-volume"
+        mountPath: "/tmp"
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    volumeMounts:
+      - name: "test-volume"
+        mountPath: "/tmp"
